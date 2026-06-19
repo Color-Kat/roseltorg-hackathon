@@ -8,6 +8,7 @@ import { twJoin } from "tailwind-merge";
 
 import { Providers } from "@/app/providers";
 import { initializeMobx } from "@/shared/lib/mobx";
+import { ChatWidget } from "@/widgets/chat";
 
 if (typeof window !== 'undefined') {
     initializeMobx();
@@ -36,6 +37,7 @@ export default function RootLayout({ children }: { children: ReactNode }) {
             <body className="antialiased light bg-background text-foreground font-inter">
                 <Providers>
                     {children}
+                    <ChatWidget />
                 </Providers>
             </body>
         </html>

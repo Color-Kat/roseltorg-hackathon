@@ -29,6 +29,20 @@ class Settings(BaseSettings):
     # --- Server ---
     BACKEND_PORT: int = 8080
 
+    # --- AI / OpenRouter ---
+    # API key from https://openrouter.ai/keys — required for AI features.
+    OPENROUTER_API_KEY: str = ""
+    OPENROUTER_BASE_URL: str = "https://openrouter.ai/api/v1"
+    # A free model so the chat works without spending credits. Browse free
+    # models at https://openrouter.ai/models?max_price=0 and swap as needed.
+    AI_MODEL: str = "deepseek/deepseek-chat-v3-0324:free"
+    # Optional outbound proxy for OpenRouter requests (region-locked networks).
+    # e.g. "http://user:pass@host:8080" or "socks5://host:1080".
+    PROXY_URL: str = ""
+    # OpenRouter ranking metadata (shown on their dashboard; harmless if unset).
+    OPENROUTER_REFERER: str = "http://localhost:8000"
+    OPENROUTER_TITLE: str = "Roseltorg Hackathon"
+
     # --- CORS ---
     CORS_ORIGINS: list[str] = ["http://localhost:8000", "http://localhost:3000"]
     # Regex of allowed origins; reflected back so credentials work. Defaults to
