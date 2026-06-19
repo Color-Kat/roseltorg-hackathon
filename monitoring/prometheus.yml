@@ -1,0 +1,10 @@
+global:
+  scrape_interval: 5s
+
+scrape_configs:
+  # Add a /metrics endpoint to the backend (e.g. prometheus-fastapi-instrumentator)
+  # and uncomment to start scraping it.
+  - job_name: "backend"
+    metrics_path: /metrics
+    static_configs:
+      - targets: ["backend:8080"]

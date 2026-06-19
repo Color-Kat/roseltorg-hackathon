@@ -1,0 +1,48 @@
+{
+  "name": "frontend",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "eslint ."
+  },
+  "dependencies": {
+    "@heroui/button": "^2.2.27",
+    "@heroui/input": "^2.4.28",
+    "@heroui/react": "^2.8.5",
+    "@heroui/system": "^2.4.23",
+    "@heroui/theme": "^2.4.23",
+    "@tailwindcss/postcss": "^4.1.6",
+    "@tanstack/react-query": "^5.75.7",
+    "@tanstack/react-query-devtools": "^5.90.2",
+    "axios": "^1.9.0",
+    "corner-smoothing": "^0.1.5",
+    "mobx": "^6.13.7",
+    "mobx-react-lite": "^4.1.0",
+    "next": "^15.6.0-canary.58",
+    "react": "19.2.1",
+    "react-dom": "19.2.1",
+    "react-icons": "^5.5.0",
+    "reflect-metadata": "^0.2.2",
+    "sass": "^1.88.0",
+    "tailwind-merge": "^3.2.0",
+    "tailwindcss": "^4.1.15",
+    "typescript": "5.8.2"
+  },
+  "devDependencies": {
+    "@svgr/webpack": "^8.1.0",
+    "@types/node": "20.17.28",
+    "@types/react": "19.2.7",
+    "@types/react-dom": "19.2.3",
+    "babel-plugin-react-compiler": "^1.0.0",
+    "eslint": "^9.39.1",
+    "eslint-config-next": "15.6.0-canary.57"
+  },
+  "overrides": {
+    "@types/react": "19.2.7",
+    "@types/react-dom": "19.2.3"
+  }
+}

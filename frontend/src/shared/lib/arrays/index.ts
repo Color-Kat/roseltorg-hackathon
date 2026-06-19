@@ -1,0 +1,1 @@
+export {arrayRand} from './array-rand';

@@ -1,0 +1,19 @@
+:root {
+    --font-inter: 'Inter', sans-serif;
+    --font-nunito: 'Nunito', sans-serif;
+    --font-onest: 'Onest', sans-serif;
+}
+
+.font-inter {
+    font-family: var(--font-inter), sans-serif;
+    line-height: 130%;
+}
+
+.font-nunito {
+    font-family: var(--font-nunito), sans-serif;
+}
+
+.font-onest {
+    font-family: var(--font-onest), Arial, Helvetica, sans-serif;
+    line-height: 1.2;
+}

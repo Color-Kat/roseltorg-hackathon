@@ -1,0 +1,44 @@
+@use "tailwindcss";
+@use "./fonts.scss";
+@use "./colors.scss";
+@use "./scrollbar.scss";
+@use "./utils.scss";
+@use "./animations.scss";
+@use "./shadows.scss";
+
+@plugin './hero.ts';
+/* Note: You may need to change the path to fit your project structure */
+@source '../../../node_modules/@heroui/theme/dist/**/*.{js,ts,jsx,tsx}';
+@custom-variant dark (&:is(.dark *));
+
+:root {
+    --background: #ffffff;
+    --foreground: var(--color-subtitle-black);
+}
+
+@theme inline {
+    --color-background: var(--background);
+    --color-foreground: var(--foreground);
+    --radius-medium: 18px;
+}
+
+body {
+    background: var(--background);
+    color: var(--foreground);
+    /*width: 100vw;*/
+    /*height: 100vh;*/
+}
+
+
+/*@media (orientation: landscape) {*/
+/*    body {*/
+/*        transform: rotate(-90deg);*/
+/*        transform-origin: left top;*/
+/*        width: 100vh;*/
+/*        height: 100vw;*/
+/*        overflow-x: hidden;*/
+/*        position: absolute;*/
+/*        top: 100%;*/
+/*        left: 0;*/
+/*    }*/
+/*}*/

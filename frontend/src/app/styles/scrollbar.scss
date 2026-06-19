@@ -1,0 +1,9 @@
+.no-scrollbar {
+    -ms-overflow-style: none; /* Internet Explorer и Edge */
+    scrollbar-width: none; /* Firefox */
+}
+
+/* Chrome, Safari и другие браузеры на WebKit */
+.no-scrollbar::-webkit-scrollbar {
+    display: none;
+}

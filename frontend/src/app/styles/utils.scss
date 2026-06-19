@@ -1,0 +1,21 @@
+.flex-center {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.container-pc {
+    max-width: 1160px;
+    margin: 0 auto;
+}
+
+// Container to make desktop site looks like mobile site
+.container-mobile {
+    max-width: 600px;
+    margin: 0 auto;
+}
+
+.container-navigation {
+    max-width: 640px;
+    margin: 0 auto;
+}

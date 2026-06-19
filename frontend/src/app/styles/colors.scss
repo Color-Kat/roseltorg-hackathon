@@ -1,0 +1,47 @@
+@theme {
+    /* Primary */
+    --color-primary-green: #69a93f;
+    --color-primary-coral: #e84c3d;
+    --color-primary-action: #fff;
+
+    /* Backgrounds */
+    --color-background-white: #fafafa;
+    --color-background-green: #69a93f;
+    --color-background-lightgreen: #8bc249;
+    --color-background-dark: #383838;
+    --color-background-black: #282828;
+
+    /* Foregrounds */
+    --color-foreground-white: #fff;
+
+    /* Text */
+    --color-title-black: #383838;
+    --color-title-white: #fff7eb;
+    --color-subtitle-black: #575757;
+    --color-subtitle-white: #38383866;
+    --color-muted: #acacac;
+
+    /* Graphics */
+    --color-data-positive: #6faf3e;
+    --color-data-neutral: #fac540;
+    --color-data-negative: #ed573f;
+
+    /* System */
+    --color-system-success: #69a93f;
+    --color-system-danger: #e84c3d;
+    --color-system-warning: #f5a524;
+}
+
+.bg-layout {
+    //background: linear-gradient(to bottom right, #e2e8f0, #f8fafc); // Old color
+    background: #f5f5f5;
+}
+
+.bg-gradient-green {
+    @apply bg-gradient-to-l from-primary-green to-[#8AC14A];
+}
+
+.bg-gradient-silver {
+    @apply bg-gradient-to-tr from-[#8A8A8A] to-[#B5B5B5];
+}
+

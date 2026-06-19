@@ -1,0 +1,58 @@
+.shadow-card-sm {
+    box-shadow: 0px 5px 25px 0px rgba(173, 173, 173, 0.12);
+}
+
+.shadow-card-md {
+    box-shadow: 0px 2px 5px 0px rgba(192, 192, 192, 0.15);
+}
+
+.drop-shadow-card-md {
+    filter: drop-shadow(0px 2px 5px rgba(192, 192, 192, 0.15));
+}
+
+.shadow-button {
+    box-shadow: -2px 2px 15px 0px rgba(79, 79, 79, 0.25);
+}
+
+.shadow-top-md {
+    box-shadow: 0px -2px 5px 0px rgba(192, 192, 192, 0.15);
+}
+
+.shadow-top-lg {
+    box-shadow: 0px -3px 30px 0px rgba(192, 192, 192, 0.35);
+}
+
+
+// ----- Glow effects ----- //
+
+.shadow-glow::before {
+    content: "";
+    position: absolute;
+    inset: -2px;
+    border-radius: 1.75rem;
+    background: linear-gradient(
+                    120deg,
+                    #69a93f, /* primary */
+                    #3fe0a1, /* изумруд */
+                    #c6ff6a, /* энергия / лайм */
+                    #ffd36a, /* золото успеха */
+                    #69a93f
+    );
+    background-size: 300% 300%;
+    filter: blur(14px);
+    opacity: 0.7;
+    z-index: 0;
+    animation: glowShift 6s ease infinite;
+}
+
+@keyframes glowShift {
+    0% {
+        background-position: 0% 50%;
+    }
+    50% {
+        background-position: 100% 50%;
+    }
+    100% {
+        background-position: 0% 50%;
+    }
+}

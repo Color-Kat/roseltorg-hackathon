@@ -1,0 +1,66 @@
+# Development stack with hot reload.
+#   docker compose up --build
+#
+# Frontend: http://localhost:8000   Backend API: http://localhost:8080
+# API docs (Swagger): http://localhost:8080/docs
+#
+# Optional monitoring (Grafana/Loki/Prometheus): add `--profile monitoring`.
+include:
+  - ./monitoring/docker-compose.yml
+
+services:
+  frontend:
+    container_name: frontend
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile.dev
+    ports:
+      - "${WEB_PORT}:${WEB_PORT}"
+    volumes:
+      - ./frontend:/app          # bind mount for hot reload
+      - /app/node_modules        # keep container's installed deps
+      - /app/.next               # keep build cache out of the host
+    environment:
+      - WATCHPACK_POLLING=true   # reliable file watching on WSL2 / Windows
+    env_file:
+      - .env
+    depends_on:
+      - backend
+
+  backend:
+    container_name: backend
+    build:
+      context: ./backend
+      dockerfile: Dockerfile.dev
+    ports:
+      - "${BACKEND_PORT}:${BACKEND_PORT}"
+    volumes:
+      - ./backend:/app           # bind mount for hot reload (uvicorn --reload)
+    environment:
+      - DB_HOST=db               # talk to the db service inside the network
+      - DB_PORT=5432
+    env_file:
+      - .env
+    depends_on:
+      db:
+        condition: service_healthy
+
+  db:
+    container_name: db
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_USER: ${DB_USER}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+      POSTGRES_DB: ${DB_NAME}
+    ports:
+      - "${DB_EXTERNAL_PORT}:5432"
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${DB_USER} -d ${DB_NAME}"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+volumes:
+  postgres-data:

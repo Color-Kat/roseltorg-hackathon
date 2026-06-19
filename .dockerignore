@@ -1,0 +1,10 @@
+# Per-service build contexts also have their own .dockerignore
+# (frontend/.dockerignore, backend/.dockerignore).
+**/node_modules
+**/.next
+**/__pycache__
+.git
+.gitignore
+*.md
+Dockerfile*
+docker-compose*.yml
