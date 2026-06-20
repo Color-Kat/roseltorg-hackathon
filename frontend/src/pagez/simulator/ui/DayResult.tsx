@@ -71,10 +71,7 @@ export const DayResult: FC<{ state: RunState; day: number; onContinue: () => voi
                         </div>
                     </div>
 
-                    <div className="rounded-2xl border border-white/10 bg-[#0c1422]/70 p-4">
-                        <h3 className="mb-3 text-sm font-bold uppercase tracking-wider text-white/55">Карта решений дня</h3>
-                        <Flowchart day={day} decisions={state.decisions} />
-                    </div>
+                    <Flowchart day={day} decisions={state.decisions} outcome={{ verdict, label: GRADE_LABEL[newGrade] }} />
                 </div>
 
                 {state.unlocked.length > 0 && (

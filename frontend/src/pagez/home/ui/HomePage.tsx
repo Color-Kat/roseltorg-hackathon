@@ -2,85 +2,80 @@ import Link from "next/link";
 
 import { ROUTES } from "@/shared/consts";
 import { Logo } from "@/shared/ui/Logo";
-import { AuthStatus } from "./AuthStatus";
-import { ItemsDemo } from "./ItemsDemo";
+import { IconArrow, IconCabinet, IconCalc, IconLaw, IconPlay, IconTarget } from "@/pagez/simulator/ui/icons";
 
-const STACK = [
-    "Next.js (App Router)",
-    "React + TypeScript",
-    "MobX",
-    "React Query",
-    "Tailwind CSS + SCSS",
-    "HeroUI",
-    "FastAPI + SQLAlchemy + Postgres",
+const FEATURES = [
+    { Icon: IconCalc, text: "Расчёты НМЦК, обеспечения, пеней" },
+    { Icon: IconLaw, text: "Каждое решение — со ссылкой на 44-ФЗ" },
+    { Icon: IconTarget, text: "Нелинейный сюжет и грейд по итогу" },
 ];
 
-/**
- * Template landing page. It exists to show the stack is wired end-to-end —
- * replace it with your own home page.
- */
 export const HomePage = () => {
     return (
-        <main className="mx-auto flex min-h-dvh max-w-2xl flex-col items-center gap-8 px-4 py-12">
-            <header className="flex flex-col items-center gap-3 text-center">
-                <Logo className="size-16" />
-                <h1 className="text-3xl font-extrabold font-nunito">Hackathon Template</h1>
-                <p className="text-default-500">
-                    Frontend and backend are wired and ready. Start building.
-                </p>
-            </header>
+        <main className="relative min-h-dvh overflow-hidden bg-[#0b1422]">
+            <div className="absolute inset-0 bg-[radial-gradient(120%_80%_at_50%_-10%,rgba(105,169,63,0.16),transparent_55%)]" />
 
-            <Link
-                href={ROUTES.SIMULATOR}
-                className="group relative w-full overflow-hidden rounded-2xl border border-primary-green/30 bg-gradient-to-br from-[#0b1422] to-[#10203a] p-6 text-left transition hover:border-primary-green/60"
-            >
-                <span className="mb-2 inline-block rounded-full border border-primary-green/40 bg-primary-green/10 px-3 py-1 text-[11px] font-bold uppercase tracking-wider text-[#8bc249]">
-                    SMolensk Dynamics · Флагман
-                </span>
-                <h2 className="text-2xl font-extrabold text-white font-nunito">
-                    Симулятор закупщика 44-ФЗ
-                </h2>
-                <p className="mt-1 text-sm text-white/60">
-                    Ассессмент грейда через визуальную новеллу: три рабочих дня, нелинейный
-                    сюжет, ачивки и отчёт для HR. Не тест, а симулятор работы.
-                </p>
-                <span className="mt-3 inline-flex items-center gap-1 text-sm font-bold text-[#8bc249] transition group-hover:gap-2">
-                    Запустить ассессмент →
-                </span>
-            </Link>
-
-            <Link
-                href={ROUTES.CABINET}
-                className="-mt-4 inline-flex items-center gap-1.5 text-sm font-semibold text-default-500 transition hover:text-primary-green"
-            >
-                Кабинет работодателя — результаты ассессментов →
-            </Link>
-
-            <section className="flex flex-wrap justify-center gap-2">
-                {STACK.map((tech) => (
-                    <span
-                        key={tech}
-                        className="rounded-full bg-default-100 px-3 py-1 text-xs text-default-600"
-                    >
-                        {tech}
+            <div className="relative mx-auto flex min-h-dvh max-w-4xl flex-col items-center justify-center px-5 py-12">
+                <header className="flex flex-col items-center gap-3 text-center">
+                    <Logo className="size-14" />
+                    <span className="rounded-full border border-[#69a93f]/40 bg-[#69a93f]/10 px-4 py-1.5 text-xs font-bold uppercase tracking-wider text-[#8bc249]">
+                        Smolensk Dynamics
                     </span>
-                ))}
-            </section>
+                    <h1 className="max-w-2xl text-3xl font-extrabold leading-tight text-white font-nunito sm:text-5xl">
+                        Ассессмент специалистов по госзакупкам
+                    </h1>
+                    <p className="max-w-xl text-sm text-white/60 sm:text-base">
+                        Симулятор рабочего процесса вместо теста: проверяем знание 44-ФЗ,
+                        расчёты бюджета и поведение в сложных ситуациях.
+                    </p>
+                </header>
 
-            <AuthStatus />
-            <ItemsDemo />
+                <div className="mt-10 grid w-full gap-4 sm:grid-cols-2">
+                    {/* Кандидат — симулятор */}
+                    <Link
+                        href={ROUTES.SIMULATOR}
+                        className="group relative flex flex-col overflow-hidden rounded-2xl border border-[#69a93f]/40 bg-gradient-to-br from-[#69a93f]/[0.12] to-[#10203a] p-6 text-left transition hover:border-[#69a93f]/70"
+                    >
+                        <span className="flex size-12 items-center justify-center rounded-xl bg-[#69a93f]/20 text-[#8bc249]">
+                            <IconPlay size={26} />
+                        </span>
+                        <div className="mt-4 text-[11px] font-bold uppercase tracking-wider text-white/40">Для кандидата</div>
+                        <h2 className="text-2xl font-extrabold text-white font-nunito">Пройти ассессмент</h2>
+                        <p className="mt-1 flex-1 text-sm text-white/60">
+                            Три рабочих дня — три грейда. Нелинейный сюжет, ачивки и отчёт для HR.
+                        </p>
+                        <span className="mt-4 inline-flex items-center gap-1.5 text-sm font-bold text-[#8bc249] transition group-hover:gap-2.5">
+                            Начать <IconArrow size={16} />
+                        </span>
+                    </Link>
 
-            <footer className="text-center text-xs text-default-400">
-                API docs:{" "}
-                <a
-                    className="underline"
-                    href={`${process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:8080"}/docs`}
-                    target="_blank"
-                    rel="noreferrer"
-                >
-                    Swagger UI
-                </a>
-            </footer>
+                    {/* HR — кабинет */}
+                    <Link
+                        href={ROUTES.CABINET}
+                        className="group relative flex flex-col overflow-hidden rounded-2xl border border-white/12 bg-gradient-to-br from-white/[0.06] to-[#10203a] p-6 text-left transition hover:border-white/30"
+                    >
+                        <span className="flex size-12 items-center justify-center rounded-xl bg-white/10 text-white/80">
+                            <IconCabinet size={24} />
+                        </span>
+                        <div className="mt-4 text-[11px] font-bold uppercase tracking-wider text-white/40">Для работодателя</div>
+                        <h2 className="text-2xl font-extrabold text-white font-nunito">Кабинет работодателя</h2>
+                        <p className="mt-1 flex-1 text-sm text-white/60">
+                            Результаты ассессментов: грейд, профиль компетенций, карта решений, комплаенс-риски.
+                        </p>
+                        <span className="mt-4 inline-flex items-center gap-1.5 text-sm font-bold text-white/80 transition group-hover:gap-2.5">
+                            Открыть <IconArrow size={16} />
+                        </span>
+                    </Link>
+                </div>
+
+                <div className="mt-8 flex flex-wrap items-center justify-center gap-x-6 gap-y-2">
+                    {FEATURES.map(({ Icon, text }) => (
+                        <span key={text} className="inline-flex items-center gap-2 text-xs text-white/45">
+                            <Icon size={15} className="text-[#8bc249]" /> {text}
+                        </span>
+                    ))}
+                </div>
+            </div>
         </main>
     );
 };

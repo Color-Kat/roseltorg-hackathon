@@ -168,16 +168,18 @@ export const FinalReport: FC<{ state: RunState; onRestart: () => void }> = ({ st
                     </div>
                 </div>
 
-                <div className="mt-4 rounded-2xl border border-white/10 bg-[#0c1422]/70 p-4">
-                    <h3 className="mb-3 text-sm font-bold uppercase tracking-wider text-white/55">Карта решений по дням</h3>
+                <div className="mt-4 space-y-3">
                     {[1, 2, 3].map((day) => {
                         const has = state.decisions.some((d) => d.day === day);
                         if (!has) return null;
+                        const o = state.outcomes.find((x) => x.day === day);
                         return (
-                            <div key={day} className="mb-4 last:mb-0">
-                                <div className="mb-2 text-xs font-bold uppercase tracking-wider text-[#8bc249]">День {day}</div>
-                                <Flowchart day={day} decisions={state.decisions} />
-                            </div>
+                            <Flowchart
+                                key={day}
+                                day={day}
+                                decisions={state.decisions}
+                                outcome={o ? { verdict: o.verdict, label: GRADE_LABEL[o.gradeReached] } : undefined}
+                            />
                         );
                     })}
                 </div>

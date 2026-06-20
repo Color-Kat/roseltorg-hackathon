@@ -26,10 +26,10 @@ export const IntroScreen: FC<{ onStart: () => void; onStartAt: (day: number) => 
 
         <div className="relative mx-auto flex min-h-full max-w-2xl flex-col items-center justify-center px-5 py-10 text-center">
             <span className="mb-4 rounded-full border border-[#69a93f]/40 bg-[#69a93f]/10 px-4 py-1.5 text-xs font-bold uppercase tracking-wider text-[#8bc249]">
-                SMolensk Dynamics · Ассессмент-симулятор
+                Smolensk Dynamics · Ассессмент-симулятор
             </span>
             <h1 className="text-3xl font-extrabold leading-tight text-white font-nunito sm:text-5xl">
-                Контрактный управляющий
+                Симулятор специалиста по гос. закупкам
             </h1>
             <p className="mt-3 max-w-lg text-sm text-white/65 sm:text-base">
                 Три рабочих дня — три грейда. Здесь нельзя «списать»: мы проверяем знание
