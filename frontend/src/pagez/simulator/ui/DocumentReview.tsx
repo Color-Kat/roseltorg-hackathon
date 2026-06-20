@@ -5,6 +5,7 @@ import { twMerge } from "tailwind-merge";
 
 import { ReviewDocument } from "../model/documents";
 import { Effect } from "../model/types";
+import { IconArrow, IconDoc, IconLaw } from "./icons";
 
 interface Props {
     doc: ReviewDocument;
@@ -64,9 +65,12 @@ export const DocumentReview: FC<Props> = ({ doc, onComplete }) => {
         <div className="vn-root flex h-full w-full flex-col bg-gradient-to-br from-[#0b1422] to-[#10203a]">
             <div className="border-b border-white/10 px-4 py-3 sm:px-8 sm:py-4">
                 <div className="mx-auto flex max-w-3xl items-center justify-between gap-3">
-                    <div className="min-w-0">
-                        <h2 className="truncate text-lg font-extrabold text-white font-nunito">{doc.title}</h2>
-                        <p className="truncate text-xs text-white/50">{doc.subtitle}</p>
+                    <div className="flex min-w-0 items-center gap-2">
+                        <span className="flex size-9 shrink-0 items-center justify-center rounded-lg bg-[#69a93f]/15 text-[#8bc249]"><IconDoc size={18} /></span>
+                        <div className="min-w-0">
+                            <h2 className="truncate text-lg font-extrabold text-white font-nunito">{doc.title}</h2>
+                            <p className="truncate text-xs text-white/50">{doc.subtitle}</p>
+                        </div>
                     </div>
                     <div className="shrink-0 rounded-lg border border-white/10 bg-white/[0.04] px-3 py-1.5 text-center">
                         <div className="text-[10px] uppercase tracking-wider text-white/40">Отмечено</div>
@@ -86,8 +90,8 @@ export const DocumentReview: FC<Props> = ({ doc, onComplete }) => {
                             </div>
                             {submitted && l.violation && (
                                 <div className="mb-1 ml-3 mt-1 flex flex-wrap items-center gap-2 text-xs">
-                                    <span className="rounded bg-[#69a93f]/15 px-2 py-0.5 font-bold text-[#8bc249]">
-                                        📖 {l.violation.cite.law} {l.violation.cite.ref}
+                                    <span className="inline-flex items-center gap-1 rounded bg-[#69a93f]/15 px-2 py-0.5 font-bold text-[#8bc249]">
+                                        <IconLaw size={12} /> {l.violation.cite.law} {l.violation.cite.ref}
                                     </span>
                                     <span className="text-white/55">{l.violation.cite.note}</span>
                                     <span className="text-white/70">→ {l.violation.fix}</span>
@@ -120,9 +124,9 @@ export const DocumentReview: FC<Props> = ({ doc, onComplete }) => {
                             </div>
                             <button
                                 onClick={() => onComplete(result.effects, result.allFound)}
-                                className="rounded-xl bg-[#69a93f] px-6 py-2.5 text-sm font-bold text-white transition hover:bg-[#5d9737]"
+                                className="inline-flex items-center gap-1.5 rounded-xl bg-[#69a93f] px-6 py-2.5 text-sm font-bold text-white transition hover:bg-[#5d9737]"
                             >
-                                Дальше →
+                                Дальше <IconArrow size={16} />
                             </button>
                         </>
                     )}

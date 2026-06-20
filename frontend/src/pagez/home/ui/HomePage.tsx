@@ -49,6 +49,13 @@ export const HomePage = () => {
                 </span>
             </Link>
 
+            <Link
+                href={ROUTES.CABINET}
+                className="-mt-4 inline-flex items-center gap-1.5 text-sm font-semibold text-default-500 transition hover:text-primary-green"
+            >
+                Кабинет работодателя — результаты ассессментов →
+            </Link>
+
             <section className="flex flex-wrap justify-center gap-2">
                 {STACK.map((tech) => (
                     <span

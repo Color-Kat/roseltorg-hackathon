@@ -82,10 +82,17 @@ export function dayVerdict(state: RunState, day: number): Verdict {
     }
 
     const bad = badDecisions(decisions, day);
+    // Упор на технику: знание базы + корректность применения решают вердикт,
+    // честность — обязательный гейт (комплаенс), софт лишь влияет на оттенок.
     if (bad >= 2 || stats.integrity < 30 || stats.trust <= 5) return "fired";
-    if (stats.knowledge >= 60 && stats.integrity >= 60 && stats.application >= 55) return "clean";
-    if (stats.knowledge >= 45 && stats.integrity >= 45) return "ok";
+    if (stats.knowledge >= 65 && stats.application >= 60 && stats.integrity >= 55) return "clean";
+    if (stats.knowledge >= 48 && stats.application >= 45) return "ok";
     return "fired";
+}
+
+/** Базовые характеристики при запуске ассессмента не с начала (демо). */
+export function demoStats(): Stats {
+    return { trust: 60, knowledge: 58, application: 56, integrity: 64, soft: 52, stress: 14 };
 }
 
 export const GRADE_BY_DAY: Record<number, Grade> = { 1: "junior", 2: "middle", 3: "senior" };
@@ -104,11 +111,28 @@ export const GRADE_SUB: Record<Grade, string> = {
     senior: "ведущий эксперт",
 };
 
-/** Финальная агрегированная оценка (для отчёта HR). */
+/**
+ * Финальная агрегированная оценка (для отчёта HR). Веса смещены на практику:
+ * знание базы и корректность применения — основное, честность важна, софт и
+ * стрессоустойчивость лишь корректируют. Это отражает упор продукта на
+ * профильную экспертизу, а не на «приятность в общении».
+ */
+export const SCORE_WEIGHTS: Record<string, number> = {
+    knowledge: 0.32,
+    application: 0.30,
+    integrity: 0.22,
+    resilience: 0.08,
+    soft: 0.08,
+};
+
 export function finalScore(stats: Stats) {
     const resilience = 100 - stats.stress;
     const avg = Math.round(
-        (stats.knowledge + stats.application + stats.integrity + stats.soft + resilience) / 5,
+        stats.knowledge * SCORE_WEIGHTS.knowledge +
+        stats.application * SCORE_WEIGHTS.application +
+        stats.integrity * SCORE_WEIGHTS.integrity +
+        resilience * SCORE_WEIGHTS.resilience +
+        stats.soft * SCORE_WEIGHTS.soft,
     );
     return { resilience, avg };
 }

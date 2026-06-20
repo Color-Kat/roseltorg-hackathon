@@ -1,6 +1,6 @@
 import { ACHIEVEMENTS } from "./achievements";
-import { SCENES, START_NODE } from "./content";
-import { clamp, dayVerdict, GRADE_BY_DAY, initStats, Verdict } from "./grading";
+import { DAY_START, SCENES, START_NODE } from "./content";
+import { clamp, dayVerdict, demoStats, GRADE_BY_DAY, initStats, Verdict } from "./grading";
 import {
     CandidateProfile,
     Choice,
@@ -89,11 +89,15 @@ export function computeDayCommit(state: RunState, day: number): {
 
 export type Action =
     | { type: "start" }
+    | { type: "startAt"; day: number }
+    | { type: "back" }
     | { type: "restart" }
     | { type: "anketaSubmit"; profile: CandidateProfile }
     | { type: "choose"; choice: Choice }
     | { type: "documentDone"; effects: Effect[] }
     | { type: "dayContinue"; day: number };
+
+const DEMO_GRADE: Record<number, Grade> = { 1: "none", 2: "junior", 3: "middle" };
 
 /** Возвращает [новое состояние, только что выданные ачивки]. */
 export function reduce(state: RunState, action: Action): [RunState, string[]] {
@@ -115,6 +119,19 @@ export function reduce(state: RunState, action: Action): [RunState, string[]] {
             next.nodeId = START_NODE;
             next.day = dayOf(START_NODE);
             const u = applyEffects(next, SCENES[START_NODE].onEnter);
+            return [next, u];
+        }
+
+        case "startAt": {
+            // Демо-режим: начать ассессмент с любого дня/грейда.
+            const target = DAY_START[action.day] ?? START_NODE;
+            next.screen = "playing";
+            next.stats = demoStats();
+            next.grade = DEMO_GRADE[action.day] ?? "none";
+            next.profile = { ...next.profile, name: "Демо-кандидат" };
+            next.nodeId = target;
+            next.day = action.day;
+            const u = applyEffects(next, SCENES[target].onEnter);
             return [next, u];
         }
 

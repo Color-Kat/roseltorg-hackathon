@@ -6,7 +6,8 @@ import { ACHIEVEMENTS } from "../model/achievements";
 import { computeDayCommit } from "../model/engine";
 import { GRADE_LABEL, reportBars } from "../model/grading";
 import { RunState } from "../model/types";
-import { DecisionTree } from "./DecisionTree";
+import { Flowchart } from "./Flowchart";
+import { IconArrow, IconBad, IconFail, IconGood, IconPass } from "./icons";
 
 const FLAVOR: Record<number, Record<string, { quote: string; head: string }>> = {
     1: {
@@ -15,12 +16,12 @@ const FLAVOR: Record<number, Record<string, { quote: string; head: string }>> = 
         fired: { head: "Вы уволены", quote: "«Не, не моё. Не сработаемся мы с тобой.»" },
     },
     2: {
-        clean: { head: "Грейд «Мидл» подтверждён", quote: "«А ты растёшь. На Эдуарда не повёлся. Завтра будет настоящая мясорубка — ФАС.»" },
+        clean: { head: "Грейд «Мидл» подтверждён", quote: "«А ты растёшь. На Эдуарда не повёлся. Завтра — ФАС.»" },
         ok: { head: "Прошли с недочётами", quote: "«Ну, тянешь. Местами сыро, но контракт живой.»" },
         fired: { head: "Вы уволены", quote: "«Я думал, у тебя стержень есть. Ошибся. Свободен.»" },
     },
     3: {
-        clean: { head: "Грейд «Сеньор» подтверждён", quote: "«За тридцать лет таких, как ты, по пальцам. Добро пожаловать в команду по-настоящему.»" },
+        clean: { head: "Грейд «Сеньор» подтверждён", quote: "«За тридцать лет таких по пальцам. Добро пожаловать в команду.»" },
         ok: { head: "Мидл с плюсом", quote: "«По закону — не подкопаешься. Но дорога нужна была людям сейчас.»" },
         fired: { head: "Контракт расторгнут", quote: "«Это уже не выговор. Это статья. Мы расстаёмся.»" },
     },
@@ -32,28 +33,27 @@ export const DayResult: FC<{ state: RunState; day: number; onContinue: () => voi
     const { verdict, newGrade } = computeDayCommit(state, day);
     const flavor = FLAVOR[day][verdict];
     const color = VERDICT_COLOR[verdict];
-    const dayDecisions = state.decisions.filter((d) => d.day === day);
     const bars = reportBars(state.stats);
     const isEnd = verdict === "fired" || day === 3;
+    const Mark = verdict === "fired" ? IconFail : IconPass;
 
     return (
         <div className="vn-root h-full w-full overflow-y-auto bg-gradient-to-br from-[#0b1422] to-[#10203a]">
-            <div className="mx-auto max-w-3xl px-4 py-8 sm:px-6">
-                <div className="vn-fade-up mb-6 text-center">
+            <div className="mx-auto max-w-4xl px-4 py-7 sm:px-6">
+                <div className="vn-fade-up mb-5 text-center">
                     <div className="text-xs font-bold uppercase tracking-[0.2em] text-white/40">Итог дня {day}</div>
-                    <h2 className="mt-1 text-3xl font-extrabold font-nunito" style={{ color }}>{flavor.head}</h2>
+                    <div className="mt-2 inline-flex items-center gap-2">
+                        <Mark size={26} style={{ color }} />
+                        <h2 className="text-2xl font-extrabold font-nunito sm:text-3xl" style={{ color }}>{flavor.head}</h2>
+                    </div>
                     <p className="mx-auto mt-2 max-w-xl text-sm italic text-white/65">{flavor.quote}</p>
-                </div>
-
-                <div className="mb-6 flex items-center justify-center gap-3">
-                    <div className="rounded-2xl border px-6 py-3 text-center" style={{ borderColor: `${color}66`, background: `${color}14` }}>
-                        <div className="text-[10px] uppercase tracking-wider text-white/45">Текущий грейд</div>
-                        <div className="text-xl font-extrabold" style={{ color }}>{GRADE_LABEL[newGrade]}</div>
+                    <div className="mt-3 inline-block rounded-xl border px-5 py-2" style={{ borderColor: `${color}66`, background: `${color}14` }}>
+                        <span className="text-[10px] uppercase tracking-wider text-white/45">Грейд: </span>
+                        <span className="text-base font-extrabold" style={{ color }}>{GRADE_LABEL[newGrade]}</span>
                     </div>
                 </div>
 
-                <div className="grid gap-5 sm:grid-cols-2">
-                    {/* Профиль */}
+                <div className="grid gap-4 md:grid-cols-2">
                     <div className="rounded-2xl border border-white/10 bg-[#0c1422]/70 p-4">
                         <h3 className="mb-3 text-sm font-bold uppercase tracking-wider text-white/55">Характеристики</h3>
                         <div className="flex flex-col gap-2.5">
@@ -71,16 +71,14 @@ export const DayResult: FC<{ state: RunState; day: number; onContinue: () => voi
                         </div>
                     </div>
 
-                    {/* Дерево решений */}
                     <div className="rounded-2xl border border-white/10 bg-[#0c1422]/70 p-4">
-                        <h3 className="mb-3 text-sm font-bold uppercase tracking-wider text-white/55">Дерево решений</h3>
-                        <DecisionTree decisions={dayDecisions} />
+                        <h3 className="mb-3 text-sm font-bold uppercase tracking-wider text-white/55">Карта решений дня</h3>
+                        <Flowchart day={day} decisions={state.decisions} />
                     </div>
                 </div>
 
-                {/* Ачивки */}
                 {state.unlocked.length > 0 && (
-                    <div className="mt-5 rounded-2xl border border-white/10 bg-[#0c1422]/70 p-4">
+                    <div className="mt-4 rounded-2xl border border-white/10 bg-[#0c1422]/70 p-4">
                         <h3 className="mb-3 text-sm font-bold uppercase tracking-wider text-white/55">Собранные ачивки</h3>
                         <div className="flex flex-wrap gap-2">
                             {state.unlocked.map((id) => {
@@ -89,7 +87,7 @@ export const DayResult: FC<{ state: RunState; day: number; onContinue: () => voi
                                 return (
                                     <span key={id} className="flex items-center gap-1.5 rounded-lg border px-2.5 py-1 text-xs font-semibold"
                                         style={{ borderColor: good ? "rgba(105,169,63,0.4)" : "rgba(232,76,61,0.4)", color: good ? "#8bc249" : "#ff7a6e", background: good ? "rgba(105,169,63,0.08)" : "rgba(232,76,61,0.08)" }}>
-                                        {good ? "🏆" : "⚠️"} {a.title}
+                                        {good ? <IconGood size={13} /> : <IconBad size={13} />} {a.title}
                                     </span>
                                 );
                             })}
@@ -97,8 +95,8 @@ export const DayResult: FC<{ state: RunState; day: number; onContinue: () => voi
                     </div>
                 )}
 
-                <button onClick={onContinue} className="mt-7 w-full rounded-xl bg-[#69a93f] py-3.5 text-sm font-bold text-white transition hover:bg-[#5d9737]">
-                    {isEnd ? "Итоговый отчёт для HR →" : `Перейти к Дню ${day + 1} →`}
+                <button onClick={onContinue} className="mt-6 inline-flex w-full items-center justify-center gap-1.5 rounded-xl bg-[#69a93f] py-3.5 text-sm font-bold text-white transition hover:bg-[#5d9737]">
+                    {isEnd ? "Итоговый отчёт для HR" : `Перейти к Дню ${day + 1}`} <IconArrow size={16} />
                 </button>
             </div>
         </div>

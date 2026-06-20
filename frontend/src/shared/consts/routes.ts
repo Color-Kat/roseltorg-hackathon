@@ -11,4 +11,5 @@ export const ROUTES = {
     AUTH_REGISTER: '/auth/register',
 
     SIMULATOR: '/simulator',
+    CABINET  : '/cabinet',
 } as const;

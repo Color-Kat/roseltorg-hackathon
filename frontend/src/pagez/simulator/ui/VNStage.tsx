@@ -6,6 +6,7 @@ import { twMerge } from "tailwind-merge";
 
 import { BACKGROUNDS, SPEAKERS, SPRITES } from "../model/cast";
 import { Choice, Line, SpriteSlot } from "../model/types";
+import { IconDown } from "./icons";
 
 const POS_CLASS: Record<string, string> = {
     left: "left-[2%] sm:left-[8%]",
@@ -104,7 +105,7 @@ export const VNStage: FC<Props> = ({ bg, stage, line, showChoices, choices, onAd
                             <p
                                 key={line.text}
                                 className={twMerge(
-                                    "vn-fade-up min-h-[56px] text-[15px] leading-relaxed text-white sm:text-base",
+                                    "vn-fade-up min-h-[44px] text-sm leading-relaxed text-white sm:text-[15px]",
                                     isNarration && "italic text-white/80",
                                 )}
                             >
@@ -137,7 +138,7 @@ export const VNStage: FC<Props> = ({ bg, stage, line, showChoices, choices, onAd
 
                         {!showChoices && canAdvance && (
                             <div className="mt-2 flex justify-end">
-                                <span className="vn-blink text-xs text-white/50">▼ дальше</span>
+                                <span className="vn-blink text-white/50"><IconDown size={16} /></span>
                             </div>
                         )}
                     </div>

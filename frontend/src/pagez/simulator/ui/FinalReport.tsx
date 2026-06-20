@@ -1,11 +1,16 @@
 "use client";
 
-import { FC, useMemo } from "react";
+import Link from "next/link";
+import { FC, useEffect, useMemo, useRef } from "react";
+
+import { useCreateAssessment } from "@/entities/assessment";
+import { ROUTES } from "@/shared/consts";
 
 import { ACHIEVEMENTS } from "../model/achievements";
 import { finalScore, GRADE_LABEL, GRADE_SUB } from "../model/grading";
 import { Citation, RunState } from "../model/types";
-import { DecisionTree } from "./DecisionTree";
+import { Flowchart } from "./Flowchart";
+import { IconArrow, IconBad, IconCabinet, IconCheck, IconFlag, IconGood, IconLaw, IconTrend } from "./icons";
 
 const RADAR = [
     { key: "knowledge", label: "Знание" },
@@ -36,8 +41,8 @@ export const FinalReport: FC<{ state: RunState; onRestart: () => void }> = ({ st
     const badAch = state.unlocked.filter((id) => ACHIEVEMENTS[id]?.tone === "bad");
     const compliance = state.flags.compliance ?? 0;
 
-    const strengths = RADAR.filter((r, i) => values[i] >= 70).map((r) => r.label);
-    const growth = RADAR.filter((r, i) => values[i] < 50).map((r) => r.label);
+    const strengths = RADAR.filter((_, i) => values[i] >= 70).map((r) => r.label);
+    const growth = RADAR.filter((_, i) => values[i] < 50).map((r) => r.label);
 
     const citations = useMemo(() => {
         const seen = new Map<string, Citation>();
@@ -47,17 +52,41 @@ export const FinalReport: FC<{ state: RunState; onRestart: () => void }> = ({ st
 
     const quality = avg >= 80 ? "уверенный" : avg >= 60 ? "стабильный" : "с оговорками";
 
+    // ---- автосохранение результата в кабинет работодателя ----
+    const saver = useCreateAssessment();
+    const saved = useRef(false);
+    useEffect(() => {
+        if (saved.current) return;
+        saved.current = true;
+        saver.mutate({
+            candidate_name: state.profile.name || "Кандидат",
+            grade,
+            grade_label: GRADE_LABEL[grade],
+            avg,
+            compliance,
+            stats,
+            decisions: state.decisions.map((d) => ({ day: d.day, question: d.question, choice: d.choice, tone: d.tone, cite: d.cite })),
+            achievements: state.unlocked.map((id) => ({ id, title: ACHIEVEMENTS[id].title, tone: ACHIEVEMENTS[id].tone, desc: ACHIEVEMENTS[id].desc })),
+            profile: { ...state.profile },
+        });
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, []);
+
     return (
         <div className="vn-root h-full w-full overflow-y-auto bg-gradient-to-br from-[#0b1422] to-[#10203a]">
-            <div className="mx-auto max-w-4xl px-4 py-8 sm:px-6">
-                <div className="vn-fade-up mb-6 text-center">
+            <div className="mx-auto max-w-4xl px-4 py-7 sm:px-6">
+                <div className="vn-fade-up mb-5 text-center">
                     <div className="text-xs font-bold uppercase tracking-[0.2em] text-[#8bc249]">Итоговый отчёт для HR</div>
-                    <h2 className="mt-1 text-3xl font-extrabold text-white font-nunito">Профиль кандидата</h2>
-                    <p className="mt-1 text-sm text-white/55">{state.profile.name} · {state.profile.edu} · {state.profile.exp}</p>
+                    <h2 className="mt-1 text-2xl font-extrabold text-white font-nunito sm:text-3xl">Профиль кандидата</h2>
+                    <p className="mt-1 text-sm text-white/55">{state.profile.name || "Кандидат"} · {state.profile.edu} · {state.profile.exp}</p>
+                    <div className="mt-2 text-xs text-white/40">
+                        {saver.isPending && "Сохранение в кабинет работодателя…"}
+                        {saver.isSuccess && "Результат сохранён в кабинет работодателя."}
+                        {saver.isError && "Не удалось сохранить (бэкенд недоступен) — отчёт виден локально."}
+                    </div>
                 </div>
 
-                {/* Грейд + радар */}
-                <div className="grid gap-5 md:grid-cols-[1fr_240px]">
+                <div className="grid gap-4 md:grid-cols-[1fr_240px]">
                     <div className="rounded-2xl border border-white/10 bg-[#0c1422]/70 p-5">
                         <div className="flex flex-wrap items-end justify-between gap-4">
                             <div>
@@ -71,36 +100,35 @@ export const FinalReport: FC<{ state: RunState; onRestart: () => void }> = ({ st
                             </div>
                         </div>
 
-                        <div className="mt-4 grid grid-cols-2 gap-3 sm:grid-cols-3">
+                        <div className="mt-4 space-y-3">
                             {strengths.length > 0 && (
-                                <div className="col-span-full">
+                                <div>
                                     <div className="mb-1.5 text-xs font-semibold uppercase tracking-wider text-white/45">Сильные стороны</div>
                                     <div className="flex flex-wrap gap-1.5">
-                                        {strengths.map((s) => <span key={s} className="rounded-md bg-[#69a93f]/12 px-2 py-1 text-xs font-semibold text-[#8bc249]">✅ {s}</span>)}
+                                        {strengths.map((s) => <span key={s} className="inline-flex items-center gap-1 rounded-md bg-[#69a93f]/12 px-2 py-1 text-xs font-semibold text-[#8bc249]"><IconCheck size={12} /> {s}</span>)}
                                     </div>
                                 </div>
                             )}
                             {growth.length > 0 && (
-                                <div className="col-span-full">
+                                <div>
                                     <div className="mb-1.5 text-xs font-semibold uppercase tracking-wider text-white/45">Точки роста</div>
                                     <div className="flex flex-wrap gap-1.5">
-                                        {growth.map((s) => <span key={s} className="rounded-md bg-[#f5a524]/12 px-2 py-1 text-xs font-semibold text-[#f5b54a]">⚠ {s}</span>)}
+                                        {growth.map((s) => <span key={s} className="inline-flex items-center gap-1 rounded-md bg-[#f5a524]/12 px-2 py-1 text-xs font-semibold text-[#f5b54a]"><IconTrend size={12} /> {s}</span>)}
                                     </div>
                                 </div>
                             )}
                             {compliance > 0 && (
-                                <div className="col-span-full rounded-lg border border-[#e84c3d]/40 bg-[#e84c3d]/10 px-3 py-2 text-xs text-[#ff7a6e]">
-                                    🚩 Комплаенс-риск: зафиксировано нарушений — {compliance}. Требует внимания HR независимо от грейда.
+                                <div className="flex items-center gap-2 rounded-lg border border-[#e84c3d]/40 bg-[#e84c3d]/10 px-3 py-2 text-xs text-[#ff7a6e]">
+                                    <IconFlag size={14} className="shrink-0" /> Комплаенс-риск: зафиксировано нарушений — {compliance}. Требует внимания HR независимо от грейда.
                                 </div>
                             )}
                         </div>
                     </div>
 
-                    {/* Радар */}
                     <div className="flex flex-col items-center justify-center rounded-2xl border border-white/10 bg-[#0c1422]/70 p-4">
                         <svg viewBox="0 0 240 220" className="w-full max-w-[240px]">
                             {[0.25, 0.5, 0.75, 1].map((f) => (
-                                <polygon key={f} points={radarPoints([100,100,100,100,100], R * f, cx, cy).map((p) => p.join(",")).join(" ")} fill="none" stroke="rgba(255,255,255,0.08)" />
+                                <polygon key={f} points={radarPoints([100, 100, 100, 100, 100], R * f, cx, cy).map((p) => p.join(",")).join(" ")} fill="none" stroke="rgba(255,255,255,0.08)" />
                             ))}
                             {axisPts.map((p, i) => <line key={i} x1={cx} y1={cy} x2={p[0]} y2={p[1]} stroke="rgba(255,255,255,0.08)" />)}
                             <polygon points={dataPts.map((p) => p.join(",")).join(" ")} fill="rgba(105,169,63,0.28)" stroke="#69a93f" strokeWidth={2} />
@@ -113,10 +141,9 @@ export const FinalReport: FC<{ state: RunState; onRestart: () => void }> = ({ st
                     </div>
                 </div>
 
-                {/* Ачивки */}
-                <div className="mt-5 grid gap-5 sm:grid-cols-2">
+                <div className="mt-4 grid gap-4 sm:grid-cols-2">
                     <div className="rounded-2xl border border-white/10 bg-[#0c1422]/70 p-4">
-                        <h3 className="mb-3 text-sm font-bold uppercase tracking-wider text-[#8bc249]">🏆 Сильные сигналы ({goodAch.length})</h3>
+                        <h3 className="mb-3 inline-flex items-center gap-2 text-sm font-bold uppercase tracking-wider text-[#8bc249]"><IconGood size={16} /> Сильные сигналы ({goodAch.length})</h3>
                         <div className="flex flex-col gap-2">
                             {goodAch.length === 0 && <p className="text-sm text-white/40">Нет.</p>}
                             {goodAch.map((id) => (
@@ -128,7 +155,7 @@ export const FinalReport: FC<{ state: RunState; onRestart: () => void }> = ({ st
                         </div>
                     </div>
                     <div className="rounded-2xl border border-white/10 bg-[#0c1422]/70 p-4">
-                        <h3 className="mb-3 text-sm font-bold uppercase tracking-wider text-[#ff7a6e]">⚠️ Сигналы внимания ({badAch.length})</h3>
+                        <h3 className="mb-3 inline-flex items-center gap-2 text-sm font-bold uppercase tracking-wider text-[#ff7a6e]"><IconBad size={16} /> Сигналы внимания ({badAch.length})</h3>
                         <div className="flex flex-col gap-2">
                             {badAch.length === 0 && <p className="text-sm text-white/40">Нет. Чистое прохождение.</p>}
                             {badAch.map((id) => (
@@ -141,25 +168,23 @@ export const FinalReport: FC<{ state: RunState; onRestart: () => void }> = ({ st
                     </div>
                 </div>
 
-                {/* Полное дерево решений */}
-                <div className="mt-5 rounded-2xl border border-white/10 bg-[#0c1422]/70 p-4">
-                    <h3 className="mb-3 text-sm font-bold uppercase tracking-wider text-white/55">Полное дерево решений</h3>
+                <div className="mt-4 rounded-2xl border border-white/10 bg-[#0c1422]/70 p-4">
+                    <h3 className="mb-3 text-sm font-bold uppercase tracking-wider text-white/55">Карта решений по дням</h3>
                     {[1, 2, 3].map((day) => {
-                        const dd = state.decisions.filter((d) => d.day === day);
-                        if (dd.length === 0) return null;
+                        const has = state.decisions.some((d) => d.day === day);
+                        if (!has) return null;
                         return (
                             <div key={day} className="mb-4 last:mb-0">
                                 <div className="mb-2 text-xs font-bold uppercase tracking-wider text-[#8bc249]">День {day}</div>
-                                <DecisionTree decisions={dd} />
+                                <Flowchart day={day} decisions={state.decisions} />
                             </div>
                         );
                     })}
                 </div>
 
-                {/* Нормативная база */}
                 {citations.length > 0 && (
-                    <div className="mt-5 rounded-2xl border border-white/10 bg-[#0c1422]/70 p-4">
-                        <h3 className="mb-3 text-sm font-bold uppercase tracking-wider text-white/55">Затронутая нормативная база</h3>
+                    <div className="mt-4 rounded-2xl border border-white/10 bg-[#0c1422]/70 p-4">
+                        <h3 className="mb-3 inline-flex items-center gap-2 text-sm font-bold uppercase tracking-wider text-white/55"><IconLaw size={16} /> Затронутая нормативная база</h3>
                         <div className="flex flex-wrap gap-2">
                             {citations.map((c, i) => (
                                 <span key={i} className="rounded-lg border border-white/10 bg-white/[0.04] px-2.5 py-1 text-xs text-white/75" title={c.note}>
@@ -170,9 +195,14 @@ export const FinalReport: FC<{ state: RunState; onRestart: () => void }> = ({ st
                     </div>
                 )}
 
-                <button onClick={onRestart} className="mt-7 w-full rounded-xl border border-white/15 py-3.5 text-sm font-bold text-white/80 transition hover:bg-white/5">
-                    Пройти ассессмент заново
-                </button>
+                <div className="mt-6 flex flex-col gap-2 sm:flex-row">
+                    <Link href={ROUTES.CABINET} className="inline-flex flex-1 items-center justify-center gap-1.5 rounded-xl bg-[#69a93f] py-3.5 text-sm font-bold text-white transition hover:bg-[#5d9737]">
+                        <IconCabinet size={16} /> Кабинет работодателя
+                    </Link>
+                    <button onClick={onRestart} className="inline-flex items-center justify-center gap-1.5 rounded-xl border border-white/15 px-6 py-3.5 text-sm font-bold text-white/80 transition hover:bg-white/5">
+                        <IconArrow size={16} /> Пройти заново
+                    </button>
+                </div>
             </div>
         </div>
     );
