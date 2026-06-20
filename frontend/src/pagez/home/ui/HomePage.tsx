@@ -1,3 +1,6 @@
+import Link from "next/link";
+
+import { ROUTES } from "@/shared/consts";
 import { Logo } from "@/shared/ui/Logo";
 import { AuthStatus } from "./AuthStatus";
 import { ItemsDemo } from "./ItemsDemo";
@@ -26,6 +29,25 @@ export const HomePage = () => {
                     Frontend and backend are wired and ready. Start building.
                 </p>
             </header>
+
+            <Link
+                href={ROUTES.SIMULATOR}
+                className="group relative w-full overflow-hidden rounded-2xl border border-primary-green/30 bg-gradient-to-br from-[#0b1422] to-[#10203a] p-6 text-left transition hover:border-primary-green/60"
+            >
+                <span className="mb-2 inline-block rounded-full border border-primary-green/40 bg-primary-green/10 px-3 py-1 text-[11px] font-bold uppercase tracking-wider text-[#8bc249]">
+                    SMolensk Dynamics · Флагман
+                </span>
+                <h2 className="text-2xl font-extrabold text-white font-nunito">
+                    Симулятор закупщика 44-ФЗ
+                </h2>
+                <p className="mt-1 text-sm text-white/60">
+                    Ассессмент грейда через визуальную новеллу: три рабочих дня, нелинейный
+                    сюжет, ачивки и отчёт для HR. Не тест, а симулятор работы.
+                </p>
+                <span className="mt-3 inline-flex items-center gap-1 text-sm font-bold text-[#8bc249] transition group-hover:gap-2">
+                    Запустить ассессмент →
+                </span>
+            </Link>
 
             <section className="flex flex-wrap justify-center gap-2">
                 {STACK.map((tech) => (

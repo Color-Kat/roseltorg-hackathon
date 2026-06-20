@@ -9,4 +9,6 @@ export const ROUTES = {
 
     AUTH_LOGIN   : '/auth/login',
     AUTH_REGISTER: '/auth/register',
+
+    SIMULATOR: '/simulator',
 } as const;
