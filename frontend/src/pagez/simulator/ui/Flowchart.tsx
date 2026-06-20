@@ -1,12 +1,12 @@
 "use client";
 
-import { FC, useMemo } from "react";
+import { FC, Fragment, useMemo } from "react";
 import { twMerge } from "tailwind-merge";
 
 import { SCENE_LIST } from "../model/content";
 import { dayOf } from "../model/engine";
 import { DecisionRecord } from "../model/types";
-import { IconCheck, IconLock } from "./icons";
+import { IconCheck, IconLock, IconNext } from "./icons";
 
 interface BranchPoint {
     nodeId: string;
@@ -22,16 +22,16 @@ function branchPoints(day: number): BranchPoint[] {
         const last = lines[lines.length - 1];
         return {
             nodeId: n.id,
-            prompt: (last?.text ?? "Развилка").replace(/^[«»()]/, "").slice(0, 90),
+            prompt: (last?.text ?? "Развилка").replace(/^[«»()]/, "").slice(0, 80),
             options: (n.choices ?? []).map((c) => ({ text: c.text, tone: c.tone ?? "neutral" })),
         };
     });
 }
 
 /**
- * Карта ветвлений в стиле Detroit: Become Human — показывает ВСЕ ответвления
- * сюжета за день, подсвечивает выбранный путь, а нереализованные ветки
- * остаются «закрытыми». Так видна полная картина решений.
+ * Горизонтальная карта ветвлений в стиле Detroit: Become Human. Развилки идут
+ * слева направо со скроллом; в каждой колонке — все варианты, выбранный
+ * подсвечен, остальные «закрыты». Колонки соединены коннекторами.
  */
 export const Flowchart: FC<{ day: number; decisions: DecisionRecord[] }> = ({ day, decisions }) => {
     const points = useMemo(() => branchPoints(day), [day]);
@@ -44,44 +44,59 @@ export const Flowchart: FC<{ day: number; decisions: DecisionRecord[] }> = ({ da
     if (points.length === 0) return <p className="text-sm text-white/40">Развилок не зафиксировано.</p>;
 
     return (
-        <div className="relative pl-5">
-            <div className="absolute bottom-3 left-[5px] top-3 w-0.5 bg-white/12" />
-            <div className="flex flex-col gap-4">
-                {points.map((p) => {
-                    const chosen = chosenByNode.get(p.nodeId);
-                    return (
-                        <div key={p.nodeId} className="relative">
-                            <span className="absolute -left-[19px] top-1 size-3 rounded-full border-2 border-[#0c1422] bg-white/40" />
-                            <p className="mb-2 text-xs text-white/45">{p.prompt}</p>
-                            <div className="flex flex-col gap-1.5">
-                                {p.options.map((o, i) => {
-                                    const isChosen = chosen === o.text;
-                                    const color = TONE_COLOR[o.tone];
-                                    return (
-                                        <div
-                                            key={i}
-                                            className={twMerge(
-                                                "flex items-center gap-2 rounded-lg border px-3 py-2 text-xs transition",
-                                                isChosen ? "text-white" : "border-white/8 text-white/35",
-                                            )}
-                                            style={isChosen ? { borderColor: `${color}88`, background: `${color}18` } : undefined}
-                                        >
-                                            {isChosen
-                                                ? <IconCheck size={13} className="shrink-0" style={{ color }} />
-                                                : <IconLock size={12} className="shrink-0 text-white/25" />}
-                                            <span className={twMerge(isChosen && "font-semibold")}>{o.text}</span>
-                                            {isChosen && (
-                                                <span className="ml-auto rounded px-1.5 py-0.5 text-[9px] font-bold uppercase" style={{ background: `${color}22`, color }}>
-                                                    ваш выбор
-                                                </span>
-                                            )}
-                                        </div>
-                                    );
-                                })}
-                            </div>
-                        </div>
-                    );
-                })}
+        <div>
+            <div className="overflow-x-auto pb-2 [scrollbar-width:thin]">
+                <div className="flex min-w-max items-stretch py-2">
+                    {points.map((p, idx) => {
+                        const chosen = chosenByNode.get(p.nodeId);
+                        return (
+                            <Fragment key={p.nodeId}>
+                                {idx > 0 && (
+                                    <div className="flex w-8 shrink-0 items-center justify-center self-center">
+                                        <span className="flex size-6 items-center justify-center rounded-full border border-white/10 bg-white/[0.04] text-white/30">
+                                            <IconNext size={14} />
+                                        </span>
+                                    </div>
+                                )}
+                                <div className="flex w-[220px] shrink-0 flex-col">
+                                    <div className="mb-2 flex items-center gap-1.5">
+                                        <span className="flex size-5 items-center justify-center rounded-full bg-white/10 text-[10px] font-bold text-white/60">{idx + 1}</span>
+                                        <span className="line-clamp-2 text-[11px] leading-tight text-white/45">{p.prompt}</span>
+                                    </div>
+                                    <div className="flex flex-1 flex-col justify-center gap-1.5">
+                                        {p.options.map((o, i) => {
+                                            const isChosen = chosen === o.text;
+                                            const color = TONE_COLOR[o.tone];
+                                            return (
+                                                <div
+                                                    key={i}
+                                                    className={twMerge(
+                                                        "flex items-start gap-1.5 rounded-lg border px-2.5 py-2 text-[11px] leading-snug transition",
+                                                        isChosen ? "text-white shadow-sm" : "border-white/8 text-white/35",
+                                                    )}
+                                                    style={isChosen ? { borderColor: `${color}99`, background: `${color}1f` } : undefined}
+                                                >
+                                                    {isChosen
+                                                        ? <IconCheck size={13} className="mt-0.5 shrink-0" style={{ color }} />
+                                                        : <IconLock size={11} className="mt-0.5 shrink-0 text-white/25" />}
+                                                    <span className={twMerge("line-clamp-3", isChosen && "font-semibold")}>{o.text}</span>
+                                                </div>
+                                            );
+                                        })}
+                                    </div>
+                                </div>
+                            </Fragment>
+                        );
+                    })}
+                </div>
+            </div>
+
+            {/* легенда */}
+            <div className="mt-1 flex flex-wrap items-center gap-3 text-[10px] text-white/45">
+                <span className="inline-flex items-center gap-1"><span className="size-2 rounded-full" style={{ background: TONE_COLOR.good }} /> Верно</span>
+                <span className="inline-flex items-center gap-1"><span className="size-2 rounded-full" style={{ background: TONE_COLOR.neutral }} /> Спорно</span>
+                <span className="inline-flex items-center gap-1"><span className="size-2 rounded-full" style={{ background: TONE_COLOR.bad }} /> Риск</span>
+                <span className="inline-flex items-center gap-1"><IconLock size={10} /> не выбрано</span>
             </div>
         </div>
     );
